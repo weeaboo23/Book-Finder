@@ -1,39 +1,45 @@
 import { useState, useEffect } from "react";
 import { fetchBooks } from "../utils/api";
 
-export function useBooks(query, page) {
+export function useBooks(query, page, mode = "title") {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [numFound, setNumFound] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     if (!query) {
-      // Reset when query is cleared
       setResults([]);
       setNumFound(0);
-      setTotalPages(0);
       return;
     }
+
+    const controller = new AbortController();
 
     async function run() {
       try {
         setLoading(true);
         setError(null);
-        const data = await fetchBooks(query, page);
-        setResults(data.docs);
+
+        const data = await fetchBooks(query, page, controller.signal, mode, 50);
         setNumFound(data.numFound);
-        setTotalPages(Math.ceil(data.numFound / 100)); // OpenLibrary returns 100/page
+
+        if (page === 1) {
+          setResults(data.docs);
+        } else {
+          setResults(prev => [...prev, ...data.docs]); // append for infinite scroll
+        }
       } catch (err) {
-        setError(err.message);
+        if (err.name !== "AbortError") setError(err.message);
       } finally {
         setLoading(false);
       }
     }
 
     run();
-  }, [query, page]);
 
-  return { results, loading, error, numFound, totalPages };
+    return () => controller.abort();
+  }, [query, page, mode]);
+
+  return { results, loading, error, numFound };
 }

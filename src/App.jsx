@@ -1,94 +1,97 @@
-import { useState, useEffect } from "react"
-import { fetchBooks, coverUrl } from "./utils/api"
+import { useState, useEffect, useCallback } from "react"
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom"
+import { useBooks } from "./hooks/useBooks"
+import SearchBar from "./components/SearchBar"
+import BookCard from "./components/BookCard"
+import BookModal from "./components/BookModal"
+import DarkModeToggle from "./components/DarkModeToggle"
+import Favorites from "./pages/Favorites"
+import debounce from "lodash.debounce"
 
 export default function App() {
   const [query, setQuery] = useState("")
-  const [books, setBooks] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [debouncedQuery, setDebouncedQuery] = useState("")
+  const [page, setPage] = useState(1)
+  const [selected, setSelected] = useState(null)
+  const [mode, setMode] = useState("title")
+
+  // Debounce search
+  const debouncedSearch = useCallback(
+    debounce((val) => setDebouncedQuery(val), 400),
+    []
+  )
 
   useEffect(() => {
-    if (!query) {
-      setBooks([])   // clear results when search is empty
-      setError(null)
-      return
-    }
+    debouncedSearch(query)
+    setPage(1)
+  }, [query, debouncedSearch])
 
-    const controller = new AbortController()
+  const { results, loading, error, numFound } = useBooks(debouncedQuery, page, mode)
 
-    async function loadBooks() {
-      setLoading(true)
-      setError(null)
-      try {
-        const data = await fetchBooks(query, 1, controller.signal, "title", 20)
-        setBooks(data.docs || [])
-      } catch (err) {
-        if (err.name !== "AbortError") setError(err.message)
-      } finally {
-        setLoading(false)
+  function handleSearch(e) {
+    e.preventDefault()
+    setDebouncedQuery(query)
+    setPage(1)
+  }
+
+  // Infinite scroll
+  useEffect(() => {
+    function handleScroll() {
+      if (
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 500 &&
+        !loading &&
+        results.length < numFound
+      ) {
+        setPage(prev => prev + 1)
       }
     }
-
-    loadBooks()
-    return () => controller.abort()
-  }, [query])
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [loading, results, numFound])
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4 sm:p-6">
-      {/* Title + Search Bar */}
-      <div className="w-full max-w-2xl text-center">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-6 flex items-center justify-center gap-2">
-          <span role="img" aria-label="book">📚</span> Book Finder
-        </h1>
+    <Router>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex flex-col">
+        <header className="sticky top-0 z-40 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-3">
+          <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+            📚 Book Finder
+          </h1>
+          <nav className="flex gap-4">
+            <Link to="/" className="hover:underline">Home</Link>
+            <Link to="/favorites" className="hover:underline">Favorites</Link>
+          </nav>
+        </header>
 
-        {/* Search Bar with Clear button */}
-        <div className="relative w-full">
-          <input
-            type="text"
-            placeholder="Search books by title..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="w-full p-3 text-base sm:text-lg rounded border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          {query && (
-            <button
-              onClick={() => setQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 text-lg sm:text-xl"
-            >
-              ❌
-            </button>
-          )}
-        </div>
+        <Routes>
+          <Route path="/" element={
+            <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
+              <SearchBar query={query} setQuery={setQuery} onSubmit={handleSearch} mode={mode} setMode={setMode} />
 
-        {loading && <p className="mt-4">Loading...</p>}
-        {error && <p className="mt-4 text-red-600">Error: {error}</p>}
-      </div>
+              {loading && <p className="text-center text-gray-500">Loading...</p>}
+              {error && <p className="text-center text-red-600">Error: {error}</p>}
+              {!loading && !error && debouncedQuery && results.length === 0 && (
+                <p className="text-center text-gray-500">No results found.</p>
+              )}
+              {numFound > 0 && (
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 text-center">
+                  Found {numFound.toLocaleString()} results
+                </p>
+              )}
 
-      {/* Results Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-10 w-full max-w-6xl">
-        {books.map((book, i) => (
-          <div
-            key={i}
-            className="bg-white p-3 rounded-xl shadow hover:shadow-md transition"
-          >
-            {coverUrl(book) ? (
-              <img
-                src={coverUrl(book)}
-                alt={book.title}
-                className="w-full h-48 sm:h-56 object-cover rounded"
-              />
-            ) : (
-              <div className="w-full h-48 sm:h-56 bg-gray-300 flex items-center justify-center rounded">
-                <span>No Cover</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {results.map((doc, i) => (
+                  <BookCard key={i} doc={doc} onClick={setSelected} />
+                ))}
               </div>
-            )}
-            <h2 className="mt-3 font-semibold text-sm sm:text-base">{book.title}</h2>
-            <p className="text-xs sm:text-sm text-gray-600">
-              {book.author_name?.[0] || "Unknown Author"}
-            </p>
-          </div>
-        ))}
+
+              {selected && <BookModal book={selected} onClose={() => setSelected(null)} />}
+            </main>
+          } />
+          <Route path="/favorites" element={<Favorites />} />
+        </Routes>
+
+        <DarkModeToggle />
       </div>
-    </div>
+    </Router>
   )
 }

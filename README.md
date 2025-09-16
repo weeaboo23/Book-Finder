@@ -6,19 +6,19 @@ A minimalist web application built with React and Vite, allowing users to search
 
 ## 🚀 Features
 
-* **Search Functionality**: Quickly find books by entering keywords like title, author, or subject.
-* **Responsive Design**: Optimized for both desktop and mobile devices.
-* **Clean UI**: Utilizes Tailwind CSS for a modern and user-friendly interface.
-* **Fast Development Setup**: Powered by Vite for rapid development and hot module replacement.
+- **Search Functionality**: Quickly find books by entering keywords like title, author, or subject.
+- **Responsive Design**: Optimized for both desktop and mobile devices.
+- **Clean UI**: Utilizes Tailwind CSS for a modern and user-friendly interface.
+- **Fast Development Setup**: Powered by Vite for rapid development and hot module replacement.
 
 ---
 
 ## 🛠️ Tech Stack
 
-* **Frontend**: React
-* **Build Tool**: Vite
-* **Styling**: Tailwind CSS
-* **API**: Open Library API
+- **Frontend**: React
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS
+- **API**: Open Library API
 
 ---
 
