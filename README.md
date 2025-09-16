@@ -1,12 +1,60 @@
-# React + Vite
+# 📚 Book Finder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A minimalist web application built with React and Vite, allowing users to search for books by title, author, or genre. The app fetches data from the [Google Books API](https://developers.google.com/books) and displays results in a clean, responsive interface.
 
-Currently, two official plugins are available:
+![Book Finder App](https://www.codersarts.com/post/book-finder-app)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🚀 Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* **Search Functionality**: Quickly find books by entering keywords like title, author, or genre.
+* **Responsive Design**: Optimized for both desktop and mobile devices.
+* **Clean UI**: Utilizes Tailwind CSS for a modern and user-friendly interface.
+* **Fast Development Setup**: Powered by Vite for rapid development and hot module replacement.
+
+---
+
+## 🛠️ Tech Stack
+
+* **Frontend**: React
+* **Build Tool**: Vite
+* **Styling**: Tailwind CSS
+* **Linter**: ESLint
+* **API**: Google Books API
+
+---
+
+## ⚙️ Installation
+
+Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/weeaboo23/Book-Finder.git
+cd Book-Finder
+npm install
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Open your browser and navigate to `http://localhost:5173` to view the app.
+
+---
+
+## 🧪 Development
+
+To run tests:
+
+```bash
+npm run test
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
