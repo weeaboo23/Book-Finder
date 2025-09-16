@@ -1,14 +1,12 @@
 # 📚 Book Finder
 
-A minimalist web application built with React and Vite, allowing users to search for books by title, author, or genre. The app fetches data from the [Google Books API](https://developers.google.com/books) and displays results in a clean, responsive interface.
-
-![Book Finder App](https://www.codersarts.com/post/book-finder-app)
+A minimalist web application built with React and Vite, allowing users to search for books by title, author, or subject. The app fetches data from the [Open Library API](https://openlibrary.org/developers/api) and displays results in a clean, responsive interface.
 
 ---
 
 ## 🚀 Features
 
-* **Search Functionality**: Quickly find books by entering keywords like title, author, or genre.
+* **Search Functionality**: Quickly find books by entering keywords like title, author, or subject.
 * **Responsive Design**: Optimized for both desktop and mobile devices.
 * **Clean UI**: Utilizes Tailwind CSS for a modern and user-friendly interface.
 * **Fast Development Setup**: Powered by Vite for rapid development and hot module replacement.
@@ -20,8 +18,7 @@ A minimalist web application built with React and Vite, allowing users to search
 * **Frontend**: React
 * **Build Tool**: Vite
 * **Styling**: Tailwind CSS
-* **Linter**: ESLint
-* **API**: Google Books API
+* **API**: Open Library API
 
 ---
 
@@ -47,7 +44,7 @@ Open your browser and navigate to `http://localhost:5173` to view the app.
 
 ## 🧪 Development
 
-To run tests:
+To run tests (if any):
 
 ```bash
 npm run test
